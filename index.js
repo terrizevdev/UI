@@ -1,3 +1,4 @@
+
 const express = require('express');
 const chalk = require('chalk');
 const fs = require('fs');
@@ -17,46 +18,6 @@ app.use(cors());
 // Load settings
 const settingsPath = path.join(__dirname, './src/settings.json');
 const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
-
-// API Key Validation Middleware
-app.use((req, res, next) => {
-  // Skip API key validation for static files and main pages
-  if (req.path === '/' || 
-      req.path.startsWith('/src/') || 
-      req.path.startsWith('/api-page/') ||
-      req.path === '/src/settings.json') {
-    return next();
-  }
-
-  // Skip API key validation for maintenance page
-  if (settings.maintenance && settings.maintenance.enabled) {
-    return next();
-  }
-
-  // Check for API key in query parameters
-  const apiKey = req.query.apikey;
-  const validApiKeys = settings.apiSettings.apikey || [];
-
-  if (!apiKey) {
-    return res.status(401).json({
-      status: 401,
-      error: 'API key required',
-      message: 'Please provide an API key using the apikey parameter',
-      valid_keys: validApiKeys
-    });
-  }
-
-  if (!validApiKeys.includes(apiKey)) {
-    return res.status(403).json({
-      status: 403,
-      error: 'Invalid API key',
-      message: 'The provided API key is invalid',
-      valid_keys: validApiKeys
-    });
-  }
-
-  next();
-});
 
 // Maintenance Middleware - Letakkan SEBELUM static files
 app.use((req, res, next) => {
@@ -86,6 +47,46 @@ app.use((req, res, next) => {
         return originalJson.call(this, data);
     };
     next();
+});
+
+// API Key Validation Middleware - Hanya untuk route API
+app.use((req, res, next) => {
+  // Skip API key validation untuk:
+  // - File static dan halaman utama
+  // - Settings.json
+  // - Route status
+  if (req.path === '/' || 
+      req.path.startsWith('/src/') || 
+      req.path.startsWith('/api-page/') ||
+      req.path === '/src/settings.json' ||
+      req.path === '/api/status' ||
+      !req.path.startsWith('/api/') && !req.path.startsWith('/ai/') && !req.path.startsWith('/islami/') && !req.path.startsWith('/islamic/') && !req.path.startsWith('/tools/') && !req.path.startsWith('/random/') && !req.path.startsWith('/search/') && !req.path.startsWith('/douyin/') && !req.path.startsWith('/dl/')) {
+    return next();
+  }
+
+  // Check for API key in query parameters
+  const apiKey = req.query.apikey;
+  const validApiKeys = settings.apiSettings.apikey || [];
+
+  if (!apiKey) {
+    return res.status(401).json({
+      status: 401,
+      error: 'API key required',
+      message: 'Please provide an API key using the apikey parameter',
+      valid_keys: validApiKeys
+    });
+  }
+
+  if (!validApiKeys.includes(apiKey)) {
+    return res.status(403).json({
+      status: 403,
+      error: 'Invalid API key',
+      message: 'The provided API key is invalid',
+      valid_keys: validApiKeys
+    });
+  }
+
+  next();
 });
 
 // Api Route
