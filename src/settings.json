@@ -1,0 +1,61 @@
+{
+  "name": "Terri Api's",
+  "version": "v1.0.0",
+  "description": "Simple rest api by Terri.",
+  "apikey": [
+    "FR3api", 
+    "FR3host"
+  ],
+  "header": {
+    "status": "Online!",
+    "imageSrc": [
+      "https://qu.ax/rGkeW.jpg"
+    ],
+    "imageSize": {
+      "mobile": "50%",
+      "tablet": "40%",
+      "desktop": "40%"
+    }
+  },
+  "apiSettings": {
+    "creator": "@Terri"
+  },
+  "links": [
+    {
+      "name": "Source Code",
+      "url": "https://whatsapp.com/channel/0029Vb57ZHh7IUYcNttXEB3y"
+    },
+    {
+      "name": "Contact Me",
+      "url": "https://wa.me/256754550399"
+    }
+  ],
+  "categories": [
+    {
+      "name": "AI",
+      "items": [
+        {
+          "name": "Chatgpt",
+          "desc": "Talk with Chatgpt",
+          "path": "/ai/chatgpt?question=",
+          "active": false
+        },
+        {
+          "name": "Chatbot",
+          "desc": "Talk with Chatbot ai",
+          "path": "/api/ai?question=",
+          "active": false
+        },
+        {
+          "name": "Kimi",
+          "desc": "Talk with Kimi-ai",
+          "path": "/ai/kimi?q=",
+          "active": false
+        }
+      ]
+    }
+  ],
+  "maintenance": {
+    "enabled": false
+  }
+}
