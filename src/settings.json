@@ -1,4 +1,3 @@
-
 {
   "name": "Terri Api's",
   "version": "v1.0.0",
@@ -40,19 +39,19 @@
           "name": "Chatgpt",
           "desc": "Talk with Chatgpt",
           "path": "/ai/chatgpt?question=&apikey=",
-          "active": false
+          "active": true
         },
         {
           "name": "Chatbot",
           "desc": "Talk with Chatbot ai",
           "path": "/api/ai?question=&apikey=",
-          "active": false
+          "active": true
         },
         {
           "name": "Kimi",
           "desc": "Talk with Kimi-ai",
           "path": "/ai/kimi?q=&apikey=",
-          "active": false
+          "active": true
         }
       ]
     }
