@@ -100,7 +100,7 @@
 
                 <div class="tab-buttons">
                     <button class="tab-button active" data-tab="parameters">Parameters</button>
-                    <button class="tab-button" data-tab="responses">Response</button>
+                    <button class="tab-button" data-tab="responses">Responses</button>
                 </div>
 
                 <div class="tab-content-wrapper">
@@ -134,7 +134,13 @@
                                 <span>Server Response</span>
                                 <button id="copyResponseBody" class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
                             </div>
-                            <pre id="apiResponseBody" class="code-block"></pre>
+                            <div class="response-content-wrapper">
+                                <div class="response-status">
+                                    <span>Status: </span>
+                                    <code id="apiResponseCode">-</code>
+                                </div>
+                                <pre id="apiResponseBody" class="code-block"></pre>
+                            </div>
                         </div>
                     </div>
                 </div>
