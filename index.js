@@ -81,8 +81,7 @@ app.use((req, res, next) => {
     return res.status(403).json({
       status: 403,
       error: 'Invalid API key',
-      message: 'The provided API key is invalid',
-      valid_keys: validApiKeys
+      message: 'The provided API key is invalid'
     });
   }
 
