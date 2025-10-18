@@ -1,3 +1,4 @@
+
 :root {
   --primary-color: #6c5ce7; /* Purple */
   --primary-hover: #5649c0; /* Darker Purple */
@@ -177,7 +178,7 @@ body.no-scroll {
 }
 
 .search-box input {
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1rem 0.75rem 3rem;
   border-radius: 50px;
   border: 1px solid var(--border-color);
   background: var(--bg-card);
@@ -197,6 +198,16 @@ body.no-scroll {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
   transform: translateY(-2px);
+}
+
+.search-box::before {
+  content: "🔍";
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  z-index: 2;
 }
 
 .endpoints-counter {
@@ -336,6 +347,67 @@ body.no-scroll {
   gap: 1rem;
 }
 
+/* HTTP Method Color Coding */
+.method-badge.get {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  font-weight: 500;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.method-badge.post {
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  font-weight: 500;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.method-badge.put {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  font-weight: 500;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
+.method-badge.delete {
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  font-weight: 500;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+.method-badge.patch {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  font-weight: 500;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+}
+
 /* API Endpoint Card */
 .api-endpoint-card {
   background: var(--bg-card);
@@ -374,18 +446,6 @@ body.no-scroll {
   transform: translateY(-3px);
 }
 
-.api-endpoint-card .method-badge {
-  background: var(--gradient);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  border-radius: 6px;
-  font-weight: 500;
-  margin-right: 0.75rem;
-  flex-shrink: 0;
-  box-shadow: 0 4px 8px rgba(108, 92, 231, 0.3);
-}
-
 .api-endpoint-card .endpoint-text {
   flex-grow: 1;
   display: flex;
@@ -416,8 +476,8 @@ body.no-scroll {
 .api-status-error {
   position: absolute;
   top: 10px;
-  right: 35px; /* Sesuaikan posisi agar tidak menimpa ikon chevron */
-  color: #ffc107; /* Warna kuning peringatan */
+  right: 35px;
+  color: #ffc107;
   font-size: 1rem;
   cursor: help;
 }
@@ -736,7 +796,7 @@ footer::before {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background-color: #333; /* Slightly darker header for code blocks */
+  background-color: #333;
   color: var(--text-muted);
   font-size: 0.875rem;
   font-weight: 500;
@@ -765,7 +825,7 @@ footer::before {
   margin: 0;
   padding: 1rem;
   background-color: transparent;
-  color: #e0e0e0; /* Light text for code */
+  color: #e0e0e0;
   font-family: monospace;
   font-size: 0.875rem;
   white-space: pre-wrap;
@@ -910,14 +970,14 @@ footer::before {
   }
 
   .api-endpoint-card {
-    flex-wrap: nowrap; /* Prevent wrapping on smaller screens */
+    flex-wrap: nowrap;
     justify-content: flex-start;
     text-align: left;
     padding: 0.6rem 0.8rem;
   }
 
   .api-endpoint-card .endpoint-text {
-    width: auto; /* Allow it to take necessary width */
+    width: auto;
     margin-bottom: 0;
   }
 
@@ -927,14 +987,8 @@ footer::before {
   }
 
   .api-endpoint-card .fas.fa-chevron-down {
-    margin-left: auto; /* Push to the right */
+    margin-left: auto;
   }
-}
-
-/* Sedikit penyesuaian agar response body tidak terlalu kecil saat loading */
-#apiResponseBody pre,
-#apiResponseBody {
-  min-height: 50px;
 }
 
 /* Toast Notification System */
@@ -1024,41 +1078,4 @@ footer::before {
 .toast-close:hover {
   color: var(--text-color);
   background: rgba(255, 255, 255, 0.1);
-}
-
-/* Toast animations */
-@keyframes toastSlideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
   }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes toastSlideOut {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
-/* Responsive toast */
-@media (max-width: 767.98px) {
-  .toast-container {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-  }
-
-  .toast {
-    min-width: auto;
-    max-width: none;
-  }
-}
