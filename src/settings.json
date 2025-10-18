@@ -1,11 +1,8 @@
+
 {
   "name": "Terri Api's",
   "version": "v1.0.0",
   "description": "Simple rest api by Terri.",
-  "apikey": [
-    "FR3api", 
-    "FR3host"
-  ],
   "header": {
     "status": "Online!",
     "imageSrc": [
@@ -18,7 +15,12 @@
     }
   },
   "apiSettings": {
-    "creator": "@Terri"
+    "creator": "@Terri",
+    "apikey": [
+      "FR3api",
+      "FR3host",
+      "free"
+    ]
   },
   "links": [
     {
@@ -37,25 +39,25 @@
         {
           "name": "Chatgpt",
           "desc": "Talk with Chatgpt",
-          "path": "/ai/chatgpt?question=",
+          "path": "/ai/chatgpt?question=&apikey=",
           "active": false
         },
         {
           "name": "Chatbot",
           "desc": "Talk with Chatbot ai",
-          "path": "/api/ai?question=",
+          "path": "/api/ai?question=&apikey=",
           "active": false
         },
         {
           "name": "Kimi",
           "desc": "Talk with Kimi-ai",
-          "path": "/ai/kimi?q=",
+          "path": "/ai/kimi?q=&apikey=",
           "active": false
         }
       ]
     }
   ],
   "maintenance": {
-    "enabled": true
+    "enabled": false
   }
 }
