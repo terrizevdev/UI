@@ -1,7 +1,27 @@
+
 const axios = require('axios');
+const settings = require('../../settings.json'); // Add this line to import settings
 
 module.exports = function (app) {
     app.get('/ai/chatgpt', async (req, res) => {
+        // Check if endpoint is disabled in settings
+        try {
+            const aiCategory = settings.categories.find(cat => cat.name === "AI");
+            if (aiCategory) {
+                const chatgptEndpoint = aiCategory.items.find(item => item.name === "Chatgpt");
+                if (chatgptEndpoint && chatgptEndpoint.active === false) {
+                    return res.status(503).json({
+                        status: false,
+                        error: "Endpoint Dinonaktifkan",
+                        message: "Endpoint ChatGPT saat ini dinonaktifkan"
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error checking endpoint status:', error);
+            // Continue if settings can't be loaded
+        }
+
         const { question, model = 'gpt-5', reasoning_effort = 'medium' } = req.query;
 
         const conf = {
