@@ -111,13 +111,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         endpointCard.dataset.apiName = item.name
         endpointCard.dataset.apiDesc = item.desc
         endpointCard.dataset.apiInnerDesc = item.innerDesc || ""
-        endpointCard.dataset.apiActive = item.active || false
-        
-        // Add inactive styling if endpoint is not active
-        if (item.active === false) {
-          endpointCard.classList.add("api-endpoint-inactive")
-        }
-        
         endpointCard.innerHTML = `<span class="method-badge">GET</span><div class="endpoint-text"><span class="endpoint-path">${item.path.split("?")[0]}</span><span class="endpoint-name">${item.name}</span></div><i class="fas fa-chevron-down"></i>`
         categoryBody.appendChild(endpointCard)
       })
@@ -159,13 +152,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.addEventListener("click", (event) => {
       if (!event.target.closest(".api-endpoint-card")) return
       const card = event.target.closest(".api-endpoint-card")
-      
-      // Check if endpoint is inactive
-      if (card.dataset.apiActive === "false") {
-        showToast("This endpoint is currently inactive", "error")
-        return
-      }
-      
       const { apiPath, apiName, apiDesc, apiInnerDesc } = card.dataset
       const modal = new bootstrap.Modal(document.getElementById("apiResponseModal"))
       const modalRefs = {
@@ -184,42 +170,46 @@ document.addEventListener("DOMContentLoaded", async () => {
       modalRefs.queryInputContainer.innerHTML = ""
       document.getElementById("apiCurlContent").textContent = ""
       document.getElementById("apiRequestUrlContent").textContent = ""
+      document.getElementById("apiResponseCode").textContent = ""
       document.getElementById("apiResponseBody").innerHTML = ""
+      document.querySelector(".tab-button[data-tab='parameters']").click()
 
       const baseApiUrl = `${BASEURL}${apiPath.split("?")[0]}`
       const params = new URLSearchParams(apiPath.split("?")[1])
       let currentParams = {}
 
-      // --- PERUBAHAN LOGIKA DI SINI ---
-      // Tombol Execute selalu muncul.
+      // Always show Execute button
       modalRefs.submitBtn.style.display = "inline-block"
-      // Tombol Clear disembunyikan secara default.
-      modalRefs.clearBtn.style.display = "none"
+      // Show Clear button only if there are parameters
+      modalRefs.clearBtn.style.display = "inline-block"
 
-      if (params.toString()) {
-        // KASUS 1: JIKA ENDPOINT PUNYA PARAMETER
+      // Create API key input (required for all endpoints)
+      const apiKeyContainer = document.createElement("div")
+      apiKeyContainer.className = "param-container"
+      const apiKeyGroup = document.createElement("div")
+      apiKeyGroup.className = "param-group"
+      apiKeyGroup.innerHTML = `
+        <label>Apikey <span class="required-star">*</span> <span class="param-type">string (query)</span></label>
+        <input type="text" class="form-control" placeholder="Enter apikey (free, FR3api, FR3host)..." data-param="apikey" required>
+        <p class="param-description">Valid API keys: free, FR3api, FR3host</p>
+      `
+      apiKeyGroup.querySelector("input").addEventListener("input", (e) => {
+        currentParams["apikey"] = e.target.value.trim()
+        updateCurlAndRequestUrl(baseApiUrl, currentParams)
+      })
+      apiKeyContainer.appendChild(apiKeyGroup)
 
-        // Tampilkan tombol Clear
-        modalRefs.clearBtn.style.display = "inline-block"
-
+      if (params.toString() && Array.from(params.keys()).some(key => key !== "apikey")) {
+        // Endpoint has parameters (other than apikey)
         const paramContainer = document.createElement("div")
         paramContainer.className = "param-container"
+        
         params.forEach((_, param) => {
+          if (param === "apikey") return // Skip apikey as we already added it
+          
           const paramGroup = document.createElement("div")
           paramGroup.className = "param-group"
-          
-          // Custom label for apikey parameter
-          let paramLabel = param.charAt(0).toUpperCase() + param.slice(1)
-          let paramPlaceholder = `Enter ${param}`
-          let paramDescription = `Masukkan ${param}`
-          
-          if (param === 'apikey') {
-            paramLabel = 'API Key'
-            paramPlaceholder = 'Enter your API key (FR3api or FR3host)'
-            paramDescription = 'Required API key. Use FR3api or FR3host'
-          }
-          
-          paramGroup.innerHTML = `<label>${paramLabel} <span class="required-star">*</span> <span class="param-type">string (query)</span></label><input type="${param === 'apikey' ? 'password' : 'text'}" class="form-control" placeholder="${paramPlaceholder}" data-param="${param}" required><p class="param-description">${paramDescription}</p>`
+          paramGroup.innerHTML = `<label>${param.charAt(0).toUpperCase() + param.slice(1)} <span class="required-star">*</span> <span class="param-type">string (query)</span></label><input type="text" class="form-control" placeholder="Enter ${param}..." data-param="${param}" required><p class="param-description">Masukkan ${param}</p>`
           paramGroup.querySelector("input").addEventListener("input", (e) => {
             currentParams[param] = e.target.value.trim()
             updateCurlAndRequestUrl(baseApiUrl, currentParams)
@@ -227,75 +217,49 @@ document.addEventListener("DOMContentLoaded", async () => {
           paramContainer.appendChild(paramGroup)
         })
 
-        if (apiInnerDesc) {
-          const innerDescDiv = document.createElement("div")
-          innerDescDiv.className = "text-muted mt-3"
-          innerDescDiv.style.fontSize = "0.875rem"
-          innerDescDiv.innerHTML = apiInnerDesc.replace(/\n/g, "<br>")
-          paramContainer.appendChild(innerDescDiv)
-        }
-
         modalRefs.queryInputContainer.appendChild(paramContainer)
-        updateCurlAndRequestUrl(baseApiUrl, currentParams)
+      }
 
-        // Onclick untuk Execute dengan validasi
-        modalRefs.submitBtn.onclick = async () => {
-          const newParams = new URLSearchParams()
-          let isValid = true
-          modalRefs.queryInputContainer.querySelectorAll("input").forEach((input) => {
-            if (!input.value.trim()) {
-              isValid = false
-              input.classList.add("is-invalid")
-            } else {
-              input.classList.remove("is-invalid")
-              newParams.append(input.dataset.param, input.value.trim())
-            }
-          })
-          if (isValid) {
-            handleApiRequest(`${baseApiUrl}?${newParams.toString()}`, apiName)
-          }
-        }
+      // Always add API key input
+      modalRefs.queryInputContainer.appendChild(apiKeyContainer)
 
-        modalRefs.clearBtn.onclick = () => {
-          modalRefs.queryInputContainer.querySelectorAll("input").forEach((input) => (input.value = ""))
-          currentParams = {}
-          updateCurlAndRequestUrl(baseApiUrl, currentParams)
-        }
-      } else {
-        // KASUS 2: JIKA ENDPOINT TIDAK PUNYA PARAMETER
-        // Even if no parameters in path, we still need apikey
-        const paramContainer = document.createElement("div")
-        paramContainer.className = "param-container"
+      if (apiInnerDesc) {
+        const innerDescDiv = document.createElement("div")
+        innerDescDiv.className = "text-muted mt-3"
+        innerDescDiv.style.fontSize = "0.875rem"
+        innerDescDiv.innerHTML = apiInnerDesc.replace(/\n/g, "<br>")
+        modalRefs.queryInputContainer.appendChild(innerDescDiv)
+      }
+
+      updateCurlAndRequestUrl(baseApiUrl, currentParams)
+
+      // Onclick for Execute with validation
+      modalRefs.submitBtn.onclick = async () => {
+        const newParams = new URLSearchParams()
+        let isValid = true
         
-        const paramGroup = document.createElement("div")
-        paramGroup.className = "param-group"
-        paramGroup.innerHTML = `<label>API Key <span class="required-star">*</span> <span class="param-type">string (query)</span></label><input type="password" class="form-control" placeholder="Enter your API key (FR3api or FR3host)" data-param="apikey" required><p class="param-description">Required API key. Use FR3api or FR3host</p>`
-        paramGroup.querySelector("input").addEventListener("input", (e) => {
-          currentParams['apikey'] = e.target.value.trim()
-          updateCurlAndRequestUrl(baseApiUrl, currentParams)
+        // Validate all inputs including API key
+        modalRefs.queryInputContainer.querySelectorAll("input").forEach((input) => {
+          if (!input.value.trim()) {
+            isValid = false
+            input.classList.add("is-invalid")
+          } else {
+            input.classList.remove("is-invalid")
+            newParams.append(input.dataset.param, input.value.trim())
+          }
         })
-        paramContainer.appendChild(paramGroup)
         
-        modalRefs.queryInputContainer.appendChild(paramContainer)
-        updateCurlAndRequestUrl(baseApiUrl, currentParams)
-
-        // Onclick untuk Execute tanpa validasi, langsung panggil API
-        modalRefs.submitBtn.onclick = async () => {
-          const newParams = new URLSearchParams()
-          let isValid = true
-          modalRefs.queryInputContainer.querySelectorAll("input").forEach((input) => {
-            if (!input.value.trim()) {
-              isValid = false
-              input.classList.add("is-invalid")
-            } else {
-              input.classList.remove("is-invalid")
-              newParams.append(input.dataset.param, input.value.trim())
-            }
-          })
-          if (isValid) {
-            handleApiRequest(`${baseApiUrl}?${newParams.toString()}`, apiName)
-          }
+        if (isValid) {
+          handleApiRequest(`${baseApiUrl}?${newParams.toString()}`, apiName)
+        } else {
+          showToast("Please fill in all required fields", "error")
         }
+      }
+
+      modalRefs.clearBtn.onclick = () => {
+        modalRefs.queryInputContainer.querySelectorAll("input").forEach((input) => (input.value = ""))
+        currentParams = {}
+        updateCurlAndRequestUrl(baseApiUrl, currentParams)
       }
 
       modal.show()
@@ -303,19 +267,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.querySelectorAll(".tab-button").forEach((button) => {
       button.addEventListener("click", function () {
-        const groupClass = "tab-button"
-        const paneClass = ".tab-pane"
-        this.parentElement.querySelectorAll(`.${groupClass}`).forEach((btn) => btn.classList.remove("active"))
+        this.parentElement.querySelectorAll(".tab-button").forEach((btn) => btn.classList.remove("active"))
         this.classList.add("active")
         const tabId = `${this.dataset.tab}Tab`
-        const parentPane = this.closest(".tab-content-wrapper")
+        const parentPane = this.closest(".modal-body")
         if (parentPane) {
-          parentPane.querySelectorAll(paneClass).forEach((pane) => pane.classList.remove("active"))
+          parentPane.querySelectorAll(".tab-pane").forEach((pane) => pane.classList.remove("active"))
           const activePane = document.getElementById(tabId)
           if (activePane) activePane.classList.add("active")
         }
       })
     })
+
     document
       .getElementById("copyCurl")
       .addEventListener("click", () =>
@@ -425,8 +388,10 @@ function blobToBase64(blob) {
 }
 
 async function handleApiRequest(apiUrl, apiName) {
+  const apiResponseCode = document.getElementById("apiResponseCode")
   const apiResponseBody = document.getElementById("apiResponseBody")
 
+  apiResponseCode.textContent = "Loading..."
   apiResponseBody.innerHTML =
     '<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>'
 
@@ -434,22 +399,19 @@ async function handleApiRequest(apiUrl, apiName) {
 
   try {
     const response = await fetch(apiUrl)
-    
+    apiResponseCode.textContent = response.status
+
     if (!response.ok) {
-      if (response.status === 401 || response.status === 403) {
-        apiResponseBody.textContent = `Error: Invalid or missing API key (Status: ${response.status})`;
-      } else {
-        try {
-          const errorData = await response.json();
-          apiResponseBody.textContent = JSON.stringify(errorData, null, 2);
-        } catch (e) {
-          apiResponseBody.textContent = await response.text();
-        }
+      try {
+        const errorData = await response.json()
+        apiResponseBody.textContent = JSON.stringify(errorData, null, 2)
+      } catch (e) {
+        apiResponseBody.textContent = await response.text()
       }
-      return;
+      return
     }
 
-    const contentType = response.headers.get("Content-Type") || "";
+    const contentType = response.headers.get("Content-Type") || ""
 
     // --- PERUBAHAN LOGIKA PREVIEW MEDIA ---
     if (contentType.startsWith("image/") || contentType.startsWith("audio/") || contentType.startsWith("video/")) {
@@ -472,6 +434,7 @@ async function handleApiRequest(apiUrl, apiName) {
       apiResponseBody.textContent = "Preview for this content type is not available."
     }
   } catch (error) {
+    apiResponseCode.textContent = "Error"
     apiResponseBody.textContent = `Network or other error occurred: ${error.message}`
   }
 }
