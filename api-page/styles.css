@@ -374,32 +374,6 @@ body.no-scroll {
   transform: translateY(-3px);
 }
 
-/* Inactive endpoint styling */
-.api-endpoint-inactive {
-  opacity: 0.6;
-  background: rgba(255, 255, 255, 0.02);
-  border-color: rgba(255, 255, 255, 0.05);
-}
-
-.api-endpoint-inactive:hover {
-  border-color: var(--warning-color);
-  transform: translateY(0);
-  box-shadow: 0 5px 15px rgba(255, 193, 7, 0.2);
-}
-
-.api-endpoint-inactive .method-badge {
-  background: var(--warning-color);
-  box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
-}
-
-.api-endpoint-inactive .endpoint-path {
-  color: var(--text-muted);
-}
-
-.api-endpoint-inactive .endpoint-name {
-  color: var(--text-muted);
-}
-
 .api-endpoint-card .method-badge {
   background: var(--gradient);
   color: white;
@@ -673,17 +647,6 @@ footer::before {
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* Special styling for password inputs (API keys) */
-.param-group input[type="password"] {
-  font-family: monospace;
-  letter-spacing: 1px;
-}
-
-.param-group input[type="password"]::placeholder {
-  font-family: var(--font-family);
-  letter-spacing: normal;
-}
-
 .param-group .param-description {
   font-size: 0.85rem;
   color: var(--text-muted);
@@ -790,6 +753,7 @@ footer::before {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  font-size: 0.8rem;
 }
 
 .copy-btn:hover,
@@ -808,6 +772,24 @@ footer::before {
   word-wrap: break-word;
   max-height: 300px;
   overflow-y: auto;
+}
+
+/* Response Status */
+.response-status {
+  padding: 0.75rem 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.response-status code {
+  background: rgba(108, 92, 231, 0.2);
+  color: var(--primary-color);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-left: 0.5rem;
 }
 
 /* Loading Screen */
@@ -1011,22 +993,10 @@ footer::before {
   background: var(--success-color);
 }
 
-.toast.error {
-  border-left-color: var(--danger-color);
-}
-
-.toast.error::before {
-  background: var(--danger-color);
-}
-
 .toast-icon {
   font-size: 1.2rem;
   color: var(--success-color);
   flex-shrink: 0;
-}
-
-.toast.error .toast-icon {
-  color: var(--danger-color);
 }
 
 .toast-message {
