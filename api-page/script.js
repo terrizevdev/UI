@@ -190,8 +190,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       apiKeyGroup.className = "param-group"
       apiKeyGroup.innerHTML = `
         <label>Apikey <span class="required-star">*</span> <span class="param-type">string (query)</span></label>
-        <input type="text" class="form-control" placeholder="Enter apikey (free, FR3api, FR3host)..." data-param="apikey" required>
-        <p class="param-description">Valid API keys: free, FR3api, FR3host</p>
+        <input type="text" class="form-control" placeholder="Enter apikey" data-param="apikey" required>
+        <p class="param-description">Valid API keys</p>
       `
       apiKeyGroup.querySelector("input").addEventListener("input", (e) => {
         currentParams["apikey"] = e.target.value.trim()
