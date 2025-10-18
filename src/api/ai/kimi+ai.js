@@ -34,19 +34,19 @@ module.exports = function (app) {
                     headers
                 };
             } catch (err) {
-                throw new Error('Gagal ambil token: ' + (err.response?.data?.message || err.message));
+                throw new Error('Failed to get token: ' + (err.response?.data?.message || err.message));
             }
         },
 
         async chat(question, options = {}) {
             if (!question || typeof question !== 'string') {
-                throw new Error('Pertanyaan wajib berupa string');
+                throw new Error('Question must be a string');
             }
 
             const { model = 'k2', search = true, deep_research = false } = options;
             const { auth, cookie, headers } = await this.getToken();
 
-            // Buat session chat
+            // Create chat session
             const chatSession = await axios.post('https://www.kimi.com/api/chat', {
                 name: 'Session',
                 born_from: 'home',
@@ -65,7 +65,7 @@ module.exports = function (app) {
 
             const chatId = chatSession.data.id;
 
-            // Kirim pertanyaan
+            // Send question
             const completion = await axios.post(
                 `https://www.kimi.com/api/chat/${chatId}/completion/stream`,
                 {
@@ -90,7 +90,7 @@ module.exports = function (app) {
                 }
             );
 
-            // Parse hasil streaming
+            // Parse streaming result
             const result = { text: '', sources: [], citations: [] };
             const lines = completion.data.split('\n\n');
 
@@ -110,16 +110,16 @@ module.exports = function (app) {
         }
     };
 
-    // Endpoint API utama
+    // Main API endpoint
     app.get('/ai/kimi', async (req, res) => {
         const { q } = req.query;
         if (!q) {
-            return res.status(400).json({ status: false, error: 'Parameter "q" wajib diisi' });
+            return res.status(400).json({ status: false, error: 'Parameter "q" is required' });
         }
 
         try {
             const result = await kimi.chat(q);
-            res.json({ status: true, creator: 'Danz-dev', result });
+            res.json({ status: true, creator: '@Terri', result });
         } catch (err) {
             res.status(500).json({ status: false, error: err.message });
         }

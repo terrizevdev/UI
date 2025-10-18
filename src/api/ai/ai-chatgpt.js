@@ -1,27 +1,7 @@
-
 const axios = require('axios');
-const settings = require('../../settings.json'); // Add this line to import settings
 
 module.exports = function (app) {
     app.get('/ai/chatgpt', async (req, res) => {
-        // Check if endpoint is disabled in settings
-        try {
-            const aiCategory = settings.categories.find(cat => cat.name === "AI");
-            if (aiCategory) {
-                const chatgptEndpoint = aiCategory.items.find(item => item.name === "Chatgpt");
-                if (chatgptEndpoint && chatgptEndpoint.active === false) {
-                    return res.status(503).json({
-                        status: false,
-                        error: "Endpoint Dinonaktifkan",
-                        message: "Endpoint ChatGPT saat ini dinonaktifkan"
-                    });
-                }
-            }
-        } catch (error) {
-            console.error('Error checking endpoint status:', error);
-            // Continue if settings can't be loaded
-        }
-
         const { question, model = 'gpt-5', reasoning_effort = 'medium' } = req.query;
 
         const conf = {
@@ -32,7 +12,7 @@ module.exports = function (app) {
         if (!question) {
             return res.status(400).json({
                 status: false,
-                error: 'Parameter "question" diperlukan.'
+                error: 'Parameter "question" is required.'
             });
         }
 
@@ -88,7 +68,7 @@ module.exports = function (app) {
         } catch (err) {
             res.status(500).json({
                 status: false,
-                error: 'Gagal memproses permintaan ChatGPT2022.',
+                error: 'Failed to process ChatGPT2022 request.',
                 message: err.message
             });
         }

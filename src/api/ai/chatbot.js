@@ -39,21 +39,21 @@ module.exports = function (app) {
     return api.data;
   }
 
-  // endpoint API
+  // API endpoint
   app.get("/api/ai", async (req, res) => {
     const { question } = req.query;
 
     if (!question) {
       return res
         .status(400)
-        .json({ status: false, error: 'Parameter "question" diperlukan' });
+        .json({ status: false, error: 'Parameter "question" is required' });
     }
 
     try {
       const result = await ai(question);
       res.json({
         status: true,
-        creator: "Danz-dev",
+        creator: "@Terri",
         result,
       });
     } catch (err) {
