@@ -18,6 +18,46 @@ app.use(cors());
 const settingsPath = path.join(__dirname, './src/settings.json');
 const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
 
+// API Key Validation Middleware
+app.use((req, res, next) => {
+  // Skip API key validation for static files and main pages
+  if (req.path === '/' || 
+      req.path.startsWith('/src/') || 
+      req.path.startsWith('/api-page/') ||
+      req.path === '/src/settings.json') {
+    return next();
+  }
+
+  // Skip API key validation for maintenance page
+  if (settings.maintenance && settings.maintenance.enabled) {
+    return next();
+  }
+
+  // Check for API key in query parameters
+  const apiKey = req.query.apikey;
+  const validApiKeys = settings.apiSettings.apikey || [];
+
+  if (!apiKey) {
+    return res.status(401).json({
+      status: 401,
+      error: 'API key required',
+      message: 'Please provide an API key using the apikey parameter',
+      valid_keys: validApiKeys
+    });
+  }
+
+  if (!validApiKeys.includes(apiKey)) {
+    return res.status(403).json({
+      status: 403,
+      error: 'Invalid API key',
+      message: 'The provided API key is invalid',
+      valid_keys: validApiKeys
+    });
+  }
+
+  next();
+});
+
 // Maintenance Middleware - Letakkan SEBELUM static files
 app.use((req, res, next) => {
     if (settings.maintenance && settings.maintenance.enabled) {
@@ -25,37 +65,6 @@ app.use((req, res, next) => {
         return res.status(503).sendFile(path.join(__dirname, 'api-page', 'maintenance.html'));
     }
     next();
-});
-
-// API Key Middleware
-app.use((req, res, next) => {
-  // Skip API key check for certain routes
-  if (req.path === '/' || 
-      req.path.startsWith('/src') || 
-      req.path === '/api/status' ||
-      req.path.startsWith('/api-page')) {
-    return next();
-  }
-  
-  const apiKey = req.query.apikey || req.headers['x-api-key'];
-  
-  if (!apiKey) {
-    return res.status(401).json({
-      status: 401,
-      message: "API key required",
-      error: "Missing API key. Please provide an API key via query parameter ?apikey=YOUR_KEY or x-api-key header."
-    });
-  }
-  
-  if (!settings.apikey.includes(apiKey)) {
-    return res.status(403).json({
-      status: 403,
-      message: "Invalid API key",
-      error: "The provided API key is invalid or expired."
-    });
-  }
-  
-  next();
 });
 
 // Static files
@@ -103,6 +112,23 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'api-page', 'index.html'));
 });
 
+// API Status endpoint (public, no API key required)
+app.get('/api/status', (req, res) => {
+    res.json({
+        status: 200,
+        message: 'API is running',
+        maintenance: settings.maintenance?.enabled || false,
+        total_routes: totalRoutes,
+        server_time: new Date().toISOString(),
+        creator: settings.apiSettings.creator
+    });
+});
+
+// Settings endpoint (public, no API key required)
+app.get('/src/settings.json', (req, res) => {
+    res.json(settings);
+});
+
 // Error handlers
 app.use((req, res, next) => {
     res.status(404).sendFile(path.join(__dirname, 'api-page', '404.html'));
@@ -116,16 +142,14 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(chalk.bgHex('#90EE90').hex('#333').bold(` Server is running on port ${PORT} `));
     
+    // Log API key info
+    const validApiKeys = settings.apiSettings.apikey || [];
+    console.log(chalk.bgHex('#FFFF99').hex('#333').bold(` Valid API Keys: ${validApiKeys.join(', ')} `));
+    
     // Log maintenance status on startup
     if (settings.maintenance && settings.maintenance.enabled) {
         console.log(chalk.bgRed.white(' MAINTENANCE MODE ENABLED '));
         console.log(chalk.yellow(` Maintenance GIF: ${settings.maintenance.gifUrl} `));
-    }
-    
-    // Log API key status
-    if (settings.apikey && settings.apikey.length > 0) {
-        console.log(chalk.bgHex('#ADD8E6').hex('#333').bold(` API Key Protection: ENABLED `));
-        console.log(chalk.blue(` Valid API Keys: ${settings.apikey.join(', ')} `));
     }
 });
 
