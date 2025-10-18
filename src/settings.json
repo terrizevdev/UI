@@ -39,7 +39,7 @@
           "name": "Chatgpt",
           "desc": "Talk with Chatgpt",
           "path": "/ai/chatgpt?question=&apikey=",
-          "active": true
+          "active": false
         },
         {
           "name": "Chatbot",
