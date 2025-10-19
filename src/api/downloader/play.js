@@ -1,17 +1,16 @@
+
 const axios = require('axios');
 const yts = require('yt-search');
 
 module.exports = function(app) {
     const ytdown = {
+        // New API endpoint
         api: {
-            base: "https://p.oceansaver.in/ajax/",
-            progress: "https://p.oceansaver.in/ajax/progress.php"
+            base: "https://api.nekolabs.my.id/downloader/youtube/play/v1"
         },
         headers: {
-            'authority': 'p.oceansaver.in',
-            'origin': 'https://y2down.cc',
-            'referer': 'https://y2down.cc/',
-            'user-agent': 'Postify/1.0.0'
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'accept': 'application/json',
         },
         isUrl: str => {
             try { new URL(str); return true; } catch { return false; }
@@ -31,48 +30,42 @@ module.exports = function(app) {
             }
             return null;
         },
-        request: async (endpoint, params = {}) => {
-            const { data } = await axios.get(`${ytdown.api.base}${endpoint}`, {
-                params,
-                headers: ytdown.headers,
-                withCredentials: true,
-                responseType: 'json'
-            });
-            return data;
-        },
         download: async (link) => {
             const id = ytdown.youtube(link);
             if (!id) throw new Error("Failed to extract YouTube ID");
-            const response = await ytdown.request("download.php", {
-                format: 'mp3',
-                url: `https://www.youtube.com/watch?v=${id}`
-            });
-            if (!response.success) throw new Error(response.message || "Error");
-            const pr = await ytdown.checkProgress(response.id);
-            if (!pr.success) throw new Error(pr.error || "Failed to get download link");
-            return {
-                title: response.title || "Unknown",
-                id,
-                thumbnail: response.info?.image || `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
-                download: pr.download_url
-            };
-        },
-        checkProgress: async (id) => {
-            let attempts = 0;
-            while (attempts < 100) {
-                try {
-                    const res = await axios.get(ytdown.api.progress, {
-                        params: { id },
-                        headers: ytdown.headers,
-                        withCredentials: true,
-                        responseType: 'json'
-                    });
-                    if (res.data.success && res.data.download_url) return { success: true, download_url: res.data.download_url };
-                } catch {}
-                await new Promise(r => setTimeout(r, 1000));
-                attempts++;
+            
+            try {
+                // Use the new API endpoint
+                const response = await axios.get(ytdown.api.base, {
+                    params: {
+                        q: `https://www.youtube.com/watch?v=${id}`
+                    },
+                    headers: ytdown.headers,
+                    responseType: 'json'
+                });
+
+                const data = response.data;
+                
+                if (!data.success) {
+                    throw new Error("API returned error status");
+                }
+
+                if (!data.result || !data.result.downloadUrl) {
+                    throw new Error("No download URL found in response");
+                }
+
+                return {
+                    title: data.result.metadata?.title || "Unknown",
+                    id: id,
+                    thumbnail: data.result.metadata?.cover || `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
+                    download: data.result.downloadUrl,
+                    duration: data.result.metadata?.duration,
+                    channel: data.result.metadata?.channel,
+                    url: data.result.metadata?.url
+                };
+            } catch (error) {
+                throw new Error(`Download failed: ${error.message}`);
             }
-            return { success: false, error: "Timeout, failed to get download link" };
         }
     };
 
@@ -81,29 +74,112 @@ module.exports = function(app) {
         if (!query) return res.status(400).json({ status: false, error: "Parameter 'query' is required" });
 
         try {
-            // Search for first video
-            const searchResult = await yts(query);
-            const video = searchResult.videos[0];
-            if (!video) return res.status(404).json({ status: false, error: "Video not found" });
+            let videoData;
+            let youtubeUrl;
 
-            // Download mp3
-            const mp3 = await ytdown.download(video.url);
+            // Check if query is a YouTube URL
+            if (ytdown.isUrl(query) && ytdown.youtube(query)) {
+                youtubeUrl = query;
+                const id = ytdown.youtube(query);
+                // Get video info using yts for additional metadata
+                const searchResult = await yts({ videoId: id });
+                videoData = searchResult;
+            } else {
+                // Search for first video
+                const searchResult = await yts(query);
+                videoData = searchResult.videos[0];
+                if (!videoData) return res.status(404).json({ status: false, error: "Video not found" });
+                youtubeUrl = videoData.url;
+            }
+
+            // Download mp3 using new API
+            const mp3 = await ytdown.download(youtubeUrl);
 
             res.json({
                 status: true,
                 creator: "@Terri",
                 result: {
                     video: {
-                        url: video.url,
-                        description: video.description,
-                        duration: video.timestamp,
-                        views: video.views,
+                        title: videoData.title,
+                        url: videoData.url,
+                        description: videoData.description,
+                        duration: videoData.timestamp,
+                        views: videoData.views,
+                        thumbnail: videoData.thumbnail,
+                        channel: videoData.author?.name
                     },
-                    mp3
+                    mp3: {
+                        title: mp3.title,
+                        id: mp3.id,
+                        thumbnail: mp3.thumbnail,
+                        download: mp3.download,
+                        duration: mp3.duration,
+                        channel: mp3.channel
+                    }
                 }
             });
         } catch (err) {
             res.status(500).json({ status: false, error: err.message });
+        }
+    });
+
+    // Direct endpoint using the new API
+    app.get('/dl/yt/play/v2', async (req, res) => {
+        const { q } = req.query;
+        if (!q) return res.status(400).json({ status: false, error: "Parameter 'q' is required" });
+
+        try {
+            let youtubeUrl = q;
+            
+            // If it's not a URL, search for it
+            if (!ytdown.isUrl(q)) {
+                const searchResult = await yts(q);
+                const video = searchResult.videos[0];
+                if (!video) return res.status(404).json({ status: false, error: "Video not found" });
+                youtubeUrl = video.url;
+            }
+
+            // Use the new API directly
+            const response = await axios.get(ytdown.api.base, {
+                params: { q: youtubeUrl },
+                headers: ytdown.headers,
+                responseType: 'json'
+            });
+
+            if (!response.data.success) {
+                return res.status(500).json({ status: false, error: "API returned error" });
+            }
+
+            res.json({
+                status: true,
+                creator: "@Terri",
+                result: response.data.result
+            });
+        } catch (err) {
+            res.status(500).json({ status: false, error: err.message });
+        }
+    });
+
+    // Simple health check for the API
+    app.get('/dl/yt/health', async (req, res) => {
+        try {
+            const response = await axios.get(ytdown.api.base, {
+                params: { q: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+                headers: ytdown.headers,
+                timeout: 10000
+            });
+            
+            res.json({
+                status: true,
+                api_status: response.data.success ? "working" : "error",
+                timestamp: new Date().toISOString()
+            });
+        } catch (err) {
+            res.status(500).json({
+                status: false,
+                api_status: "down",
+                error: err.message
+            });
         }
     });
 };
