@@ -1,3 +1,4 @@
+
 {
   "name": "Terri Api's",
   "version": "v1.0.0",
@@ -5,7 +6,7 @@
   "header": {
     "status": "Online!",
     "imageSrc": [
-      "https://qu.ax/rGkeW.jpg"
+      "https://files.catbox.moe/vhvx8r.png"
     ],
     "imageSize": {
       "mobile": "50%",
@@ -16,9 +17,9 @@
   "apiSettings": {
     "creator": "@Terri",
     "apikey": [
-      "FR3api",
-      "FR3host",
-      "free"
+      "terri",
+      "vinici",
+      "pussy"
     ]
   },
   "links": [
@@ -39,7 +40,7 @@
           "name": "Chatgpt",
           "desc": "Talk with Chatgpt",
           "path": "/ai/chatgpt?question=&apikey=",
-          "active": false
+          "active": true
         },
         {
           "name": "Chatbot",
@@ -51,6 +52,138 @@
           "name": "Kimi",
           "desc": "Talk with Kimi-ai",
           "path": "/ai/kimi?q=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Deepseek",
+          "desc": "Deepseek AI",
+          "path": "/ai/deepseek?text=&apikey=",
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Islamic",
+      "items": [
+        {
+          "name": "Jadwal Sholat",
+          "desc": "Jadwal sholat seluruh dunia",
+          "path": "/islami/jadwalsholat?city=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Random Hadist",
+          "desc": "Hadist",
+          "path": "/islamic/hadits/random?apikey=",
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Tools",
+      "items": [
+        {
+          "name": "Text2img",
+          "desc": "Prompt to img style",
+          "path": "/tools/text2img?prompt=&apikey=",
+          "active": true
+        },
+        {
+          "name": "To Ghibli",
+          "desc": "Note : dapat down sewaktu-waktu",
+          "path": "/api/ghibli?imageUrl=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Ssweb",
+          "desc": "Screenshot website",
+          "path": "/tools/screenshot?url=&apikey=",
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Random",
+      "items": [
+        {
+          "name": "Loli",
+          "desc": "Loli Random Images",
+          "path": "/random/loli?apikey=",
+          "active": true
+        },
+        {
+          "name": "Blue Archive",
+          "desc": "Blue Archive Random Images",
+          "path": "/random/ba?apikey=",
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Search Tools",
+      "items": [
+        {
+          "name": "YouTube",
+          "desc": "Youtube search",
+          "path": "/search/youtube?q=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Resep",
+          "desc": "Get resep makanan by cookpad",
+          "path": "/search/resep?q=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Lyrics",
+          "desc": "Lirik search",
+          "path": "/search/lyrics?title=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Douyin",
+          "desc": "Douyin search",
+          "path": "/douyin/search?keyword=&apikey=",
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Downloader",
+      "items": [
+        {
+          "name": "Ytmp3",
+          "desc": "Download youtube format mp3",
+          "path": "/api/ytmp3?url=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Ytdl mp3/mp4",
+          "desc": "Download youtube format mp3/320p,720p,1080p",
+          "path": "/api/ytdl?url=&format=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Ytmp4",
+          "desc": "Download youtube format mp4",
+          "path": "/api/ytmp4?url=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Play",
+          "desc": "Play youtube format mp3",
+          "path": "/dl/yt/play?query=&apikey=",
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "Status",
+      "items": [
+        {
+          "name": "Info status",
+          "desc": "check status api",
+          "path": "/api/status?apikey=",
           "active": true
         }
       ]
