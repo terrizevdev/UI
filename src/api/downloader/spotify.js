@@ -67,4 +67,13 @@ module.exports = function(app) {
                 data: result
             });
             
-        } catch (
+        } catch (error) {
+            console.error('Spotify Downloader Error:', error);
+            res.status(500).json({
+                status: 500,
+                error: 'Spotify download failed',
+                message: error.message
+            });
+        }
+    });
+};
