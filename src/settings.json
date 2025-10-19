@@ -1,4 +1,3 @@
-
 {
   "name": "Terri Api's",
   "version": "v1.0.0",
@@ -145,7 +144,13 @@
           "desc": "Douyin search",
           "path": "/douyin/search?keyword=&apikey=",
           "active": true
-        }
+        },
+        {
+  "name": "Apple Music",
+  "desc": "Apple Music search",
+  "path": "/search/applemusic?q=&apikey=",
+  "active": true
+       }
       ]
     },
     {
