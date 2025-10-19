@@ -5,7 +5,7 @@
   "header": {
     "status": "Online!",
     "imageSrc": [
-      "https://files.catbox.moe/vhvx8r.png"
+      "https://qu.ax/rGkeW.jpg"
     ],
     "imageSize": {
       "mobile": "50%",
@@ -57,6 +57,12 @@
           "name": "Deepseek",
           "desc": "Deepseek AI",
           "path": "/ai/deepseek?text=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Qwen AI",
+          "desc": "Talk with Qwen AI",
+          "path": "/ai/qwen?question=&instruction=&model=&type=&chatId=&apikey=",
           "active": true
         }
       ]
@@ -146,11 +152,17 @@
           "active": true
         },
         {
-  "name": "Apple Music",
-  "desc": "Apple Music search",
-  "path": "/search/applemusic?q=&apikey=",
-  "active": true
-       }
+          "name": "Apple Music",
+          "desc": "Apple Music search",
+          "path": "/search/applemusic?q=&apikey=",
+          "active": true
+        },
+        {
+          "name": "MediaFire Search",
+          "desc": "Search files on MediaFire",
+          "path": "/search/mediafire?q=&apikey=",
+          "active": true
+        }
       ]
     },
     {
@@ -178,6 +190,12 @@
           "name": "Play",
           "desc": "Play youtube format mp3",
           "path": "/dl/yt/play?query=&apikey=",
+          "active": true
+        },
+        {
+          "name": "A2Z Downloader",
+          "desc": "Download from various platforms using A2Z converter",
+          "path": "/downloader/a2z?url=&apikey=",
           "active": true
         }
       ]
