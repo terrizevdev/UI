@@ -201,6 +201,17 @@
       ]
     },
     {
+      "name": "Stalk",
+      "items": [
+        {
+          "name": "NPM Stalk",
+          "desc": "Get information about NPM packages",
+          "path": "/stalk/npm?name=&apikey=",
+          "active": true
+        }
+      ]
+    },
+    {
       "name": "Status",
       "items": [
         {
