@@ -89,16 +89,16 @@
       "items": [
         {
           "name": "Text2img",
-          "desc": "Prompt to img style",
+          "desc": "AI image generation from text",
           "path": "/tools/text2img?prompt=&apikey=",
           "active": true
         },
         {
-  "name": "ShortURL",
-  "desc": "Shorten URLs using kua.lat service",
-  "path": "/tools/shorturl?url=&apikey=",
-  "active": true
-       },
+          "name": "ShortURL",
+          "desc": "Shorten URLs using kua.lat service",
+          "path": "/tools/shorturl?url=&apikey=",
+          "active": true
+        },
         {
           "name": "To Ghibli",
           "desc": "Note : dapat down sewaktu-waktu",
@@ -106,9 +106,33 @@
           "active": true
         },
         {
+          "name": "Fake Story",
+          "desc": "Create fake Instagram stories",
+          "path": "/tools/fakestory?image=&avatar=&username=&apikey=",
+          "active": true
+        },
+        {
           "name": "Ssweb",
           "desc": "Screenshot website",
           "path": "/tools/screenshot?url=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Web2ZIP",
+          "desc": "Download website as ZIP file",
+          "path": "/tools/web2zip?url=&renameAssets=&saveStructure=&alternativeAlgorithm=&mobileVersion=&apikey=",
+          "active": true
+        },
+        {
+          "name": "SS2Code",
+          "desc": "Convert screenshot to HTML code",
+          "path": "/tools/ss2code?image=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Img2ASCII",
+          "desc": "Convert image to ASCII art",
+          "path": "/tools/img2ascii?url=&width=&apikey=",
           "active": true
         }
       ]
@@ -199,9 +223,39 @@
           "active": true
         },
         {
+          "name": "TikTok Downloader",
+          "desc": "Download TikTok videos without watermark",
+          "path": "/downloader/tiktok?url=&apikey=",
+          "active": true
+        },
+        {
           "name": "A2Z Downloader",
           "desc": "Download from various platforms using A2Z converter",
           "path": "/downloader/a2z?url=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Spotify Downloader",
+          "desc": "Download Spotify tracks",
+          "path": "/downloader/spotify?url=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Instagram Story",
+          "desc": "Download Instagram stories",
+          "path": "/downloader/igstory?url=&apikey=",
+          "active": true
+        },
+        {
+          "name": "MediaFire",
+          "desc": "Download files from MediaFire",
+          "path": "/downloader/mediafire?url=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Threads",
+          "desc": "Download Threads posts",
+          "path": "/downloader/threads?url=&apikey=",
           "active": true
         }
       ]
