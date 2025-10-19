@@ -23,7 +23,8 @@
     "moment-timezone": "^0.5.45",
     "qs": "^6.11.2",
     "ws": "^8.14.2",
-    "mime-types": "^2.1.35"
+    "mime-types": "^2.1.35",
+    "yt-search": "^2.13.1"
   },
   "engines": {
     "node": ">=18.0.0"
