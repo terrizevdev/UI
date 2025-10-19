@@ -94,9 +94,15 @@
           "active": true
         },
         {
+  "name": "ShortURL",
+  "desc": "Shorten URLs using kua.lat service",
+  "path": "/tools/shorturl?url=&apikey=",
+  "active": true
+       },
+        {
           "name": "To Ghibli",
           "desc": "Note : dapat down sewaktu-waktu",
-          "path": "/api/ghibli?imageUrl=&apikey=",
+          "path": "/tools/toghibli?imageUrl=&apikey=",
           "active": true
         },
         {
