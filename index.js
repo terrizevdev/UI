@@ -1,4 +1,3 @@
-
 const express = require('express');
 const chalk = require('chalk');
 const fs = require('fs');
@@ -60,7 +59,7 @@ app.use((req, res, next) => {
       req.path.startsWith('/api-page/') ||
       req.path === '/src/settings.json' ||
       req.path === '/api/status' ||
-      !req.path.startsWith('/api/') && !req.path.startsWith('/ai/') && !req.path.startsWith('/islami/') && !req.path.startsWith('/islamic/') && !req.path.startsWith('/tools/') && !req.path.startsWith('/random/') && !req.path.startsWith('/search/') && !req.path.startsWith('/douyin/') && !req.path.startsWith('/dl/')) {
+      !req.path.startsWith('/api/') && !req.path.startsWith('/ai/') && !req.path.startsWith('/islami/') && !req.path.startsWith('/islamic/') && !req.path.startsWith('/tools/') && !req.path.startsWith('/random/') && !req.path.startsWith('/search/') && !req.path.startsWith('/douyin/') && !req.path.startsWith('/dl/') && !req.path.startsWith('/downloader/') && !req.path.startsWith('/stalk/')) {
     return next();
   }
 
