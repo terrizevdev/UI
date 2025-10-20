@@ -56,7 +56,7 @@ module.exports = function(app) {
         }
     });
 
-    // Endpoint 2: Default 320p
+    // Endpoint 2: Default 320
     app.get('/downloader/youtube/ytmp4', async (req, res) => {
         const startTime = Date.now();
         
@@ -80,10 +80,10 @@ module.exports = function(app) {
             res.json(result);
             
         } catch (error) {
-            console.error('YouTube 320p Downloader Error:', error);
+            console.error('YouTube 320 Downloader Error:', error);
             res.status(500).json({
                 success: false,
-                error: 'YouTube 320p download failed',
+                error: 'YouTube 320 download failed',
                 message: error.message,
                 timestamp: new Date().toISOString(),
                 responseTime: `${Date.now() - startTime}ms`
