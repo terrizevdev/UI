@@ -35,6 +35,12 @@
     {
       "name": "AI",
       "items": [
+      {
+  "name": "ToFigure AI",
+  "desc": "Convert images to figurine style using Nano Banana AI",
+  "path": "/ai/tofigure?imageUrl=&apikey=",
+  "active": true
+        },
         {
           "name": "Chatgpt",
           "desc": "Talk with Chatgpt",
