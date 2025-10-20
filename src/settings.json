@@ -247,6 +247,12 @@
           "active": true
         },
         {
+      "name": "Instagram",
+      "desc": "Download Instagram posts, reels, and TV videos",
+      "path": "/downloader/instagram?url=&apikey=",
+      "active": true
+        },
+        {
           "name": "Instagram Story",
           "desc": "Download Instagram stories",
           "path": "/downloader/igstory?url=&apikey=",
