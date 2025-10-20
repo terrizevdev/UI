@@ -236,7 +236,13 @@
         },
         {
           "name": "Spotify Downloader",
-          "desc": "Download Spotify tracks",
+          "desc": "Download Spotify tracks quarry",
+          "path": "/downloader/spotify/v1?q=&apikey=",
+          "active": true
+        },
+        {
+          "name": "Spotify Downloader",
+          "desc": "Download Spotify tracks Url",
           "path": "/downloader/spotify?url=&apikey=",
           "active": true
         },
