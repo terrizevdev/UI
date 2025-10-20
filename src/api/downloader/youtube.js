@@ -1,130 +1,93 @@
+
 const axios = require('axios');
 
-module.exports = function (app) {
-    const ytdown = {
-        api: {
-            base: "https://p.oceansaver.in/ajax/",
-            progress: "https://p.oceansaver.in/ajax/progress.php"
-        },
-        headers: {
-            'authority': 'p.oceansaver.in',
-            'origin': 'https://y2down.cc',
-            'referer': 'https://y2down.cc/',
-            'user-agent': 'Postify/1.0.0'
-        },
-        silent: process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production',
+async function youtubeDownload(url, format) {
+    try {
+        if (!url) throw new Error('URL parameter required');
 
-        isUrl: str => {
-            try { new URL(str); return true; } catch { return false; }
-        },
+        const apiUrl = `https://api.nekolabs.my.id/downloader/youtube/v1?url=${encodeURIComponent(url)}&format=${format}`;
+        
+        const response = await axios.get(apiUrl, {
+            headers: {
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            },
+            timeout: 60000
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw new Error(`YouTube download failed: ${error.message}`);
+    }
+}
 
-        youtube: url => {
-            if (!url) return null;
-            const patterns = [
-                /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-                /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-                /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
-                /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
-                /youtu\.be\/([a-zA-Z0-9_-]{11})/
-            ];
-            for (let p of patterns) {
-                const match = url.match(p);
-                if (match) return match[1];
-            }
-            return null;
-        },
-
-        request: async (endpoint, params = {}) => {
-            const { data } = await axios.get(`${ytdown.api.base}${endpoint}`, {
-                params,
-                headers: ytdown.headers,
-                withCredentials: true,
-                responseType: 'json'
-            });
-            return data;
-        },
-
-        download: async (link, format) => {
-            if (!link) throw new Error("Parameter 'url' is required 🗿");
-            if (!ytdown.isUrl(link)) throw new Error("Link is not a YouTube URL 🗿");
-
-            const id = ytdown.youtube(link);
-            if (!id) throw new Error("Failed to extract YouTube ID 😂");
-
-            const response = await ytdown.request("download.php", {
-                format,
-                url: `https://www.youtube.com/watch?v=${id}`
-            });
-
-            return await ytdown.handler(response, format, id);
-        },
-
-        handler: async (data, format, id) => {
-            if (!data.success) throw new Error(data.message || "Error");
-            if (!data.id) throw new Error("Download ID not available 😂");
-
-            const pr = await ytdown.checkProgress(data.id);
-            if (pr.success) return ytdown.final(data, pr, format, id);
-            throw new Error(pr.error || "Unknown error");
-        },
-
-        checkProgress: async (id) => {
-            let attempts = 0;
-            while (attempts < 100) {
-                try {
-                    const res = await axios.get(ytdown.api.progress, {
-                        params: { id },
-                        headers: ytdown.headers,
-                        withCredentials: true,
-                        responseType: 'json'
-                    });
-                    const data = res.data;
-
-                    if (data.success && data.download_url) return { success: true, ...data };
-                } catch (e) {
-                    // ignore error, retry
-                }
-
-                await new Promise(r => setTimeout(r, 1000));
-                attempts++;
-            }
-            return { success: false, error: "Timeout, failed to get download link 😂" };
-        },
-
-        final: (init, pro, format, id) => ({
-            success: true,
-            title: init.title || "Unknown 🤷🏻",
-            type: format === 'mp3' ? 'audio' : 'video',
-            format,
-            thumbnail: init.info?.image || `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
-            download: pro.download_url || null,
-            id
-        })
-    };
-
-    // MP3 Endpoint
-    app.get('/downloader/youtube/ytmp3', async (req, res) => {
-        const { url } = req.query;
-        if (!url) return res.status(400).json({ status: false, error: 'Parameter "url" is required' });
-
+module.exports = function(app) {
+    // Endpoint 1: Default MP3
+    app.get('/downloader/youtube/mp3', async (req, res) => {
+        const startTime = Date.now();
+        
         try {
-            const result = await ytdown.download(url, 'mp3');
-            res.json({ status: true, creator: 'Danz-dev', result });
-        } catch (err) {
-            res.status(500).json({ status: false, error: err.message });
+            const { url, apikey } = req.query;
+            
+            if (!url) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'URL parameter required',
+                    message: 'Please provide a YouTube URL',
+                    timestamp: new Date().toISOString(),
+                    responseTime: `${Date.now() - startTime}ms`
+                });
+            }
+
+            const result = await youtubeDownload(url, 'mp3');
+            
+            result.responseTime = `${Date.now() - startTime}ms`;
+            
+            res.json(result);
+            
+        } catch (error) {
+            console.error('YouTube MP3 Downloader Error:', error);
+            res.status(500).json({
+                success: false,
+                error: 'YouTube MP3 download failed',
+                message: error.message,
+                timestamp: new Date().toISOString(),
+                responseTime: `${Date.now() - startTime}ms`
+            });
         }
     });
 
-    // MP4 720p Endpoint
-    app.get('/downloader/youtube/ytmp4', async (req, res) => {
-        const { url } = req.query;
-        if (!url) return res.status(400).json({ status: false, error: 'Parameter "url" is required' });
-
+    // Endpoint 2: Default 320p
+    app.get('/downloader/youtube/mp4', async (req, res) => {
+        const startTime = Date.now();
+        
         try {
-            const result = await ytdown.download(url, '720'); // fix 720p
-            res.json({ status: true, creator: '@Terri', result });
-        } catch (err) {
-            res.status(500).json({ status: false, error: err.message });
+            const { url, apikey } = req.query;
+            
+            if (!url) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'URL parameter required',
+                    message: 'Please provide a YouTube URL',
+                    timestamp: new Date().toISOString(),
+                    responseTime: `${Date.now() - startTime}ms`
+                });
+            }
+
+            const result = await youtubeDownload(url, '320');
+            
+            result.responseTime = `${Date.now() - startTime}ms`;
+            
+            res.json(result);
+            
+        } catch (error) {
+            console.error('YouTube 320p Downloader Error:', error);
+            res.status(500).json({
+                success: false,
+                error: 'YouTube 320p download failed',
+                message: error.message,
+                timestamp: new Date().toISOString(),
+                responseTime: `${Date.now() - startTime}ms`
+            });
         }
     });
 };
