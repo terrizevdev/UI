@@ -22,7 +22,7 @@ async function youtubeDownload(url, format) {
 
 module.exports = function(app) {
     // Endpoint 1: Default MP3
-    app.get('/downloader/youtube/mp3', async (req, res) => {
+    app.get('/downloader/youtube/ytmp3', async (req, res) => {
         const startTime = Date.now();
         
         try {
@@ -57,7 +57,7 @@ module.exports = function(app) {
     });
 
     // Endpoint 2: Default 320p
-    app.get('/downloader/youtube/mp4', async (req, res) => {
+    app.get('/downloader/youtube/ytmp4', async (req, res) => {
         const startTime = Date.now();
         
         try {
