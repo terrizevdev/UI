@@ -21,7 +21,7 @@ async function spotifydl(url) {
 }
 
 module.exports = function(app) {
-    app.get('/downloader/spotify/v1', async (req, res) => {
+    app.get('/downloader/spotify', async (req, res) => {
         const startTime = Date.now();
         
         try {
