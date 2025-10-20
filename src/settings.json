@@ -206,7 +206,7 @@
         },
         {
           "name": "Ytdl mp3/mp4",
-          "desc": "Download youtube format mp3/320p,720p,1080p",
+          "desc": "Download youtube format mp3', '144', '240', '360', '480', '720', '1080",
           "path": "/downloader/ytdl?url=&format=&apikey=",
           "active": true
         },
