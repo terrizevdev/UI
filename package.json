@@ -1,13 +1,11 @@
-
 {
-  "name": "terri-api",
+  "name": "terri_Api's",
   "version": "1.0.0",
   "description": "A simple and customizable API documentation interface built with Express.js.",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node --no-deprecation index.js",
-    "dev": "node --no-deprecation index.js"
+    "start": "node --no-deprecation index.js"
   },
   "author": "Terri",
   "license": "MIT",
@@ -17,17 +15,18 @@
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "express": "^4.19.2",
     "file-type": "^21.0.0",
     "form-data": "^4.0.0",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "mime-types": "^2.1.35",
     "moment-timezone": "^0.5.45",
     "node-fetch": "^2.6.1",
     "qrcode": "^1.5.3",
     "qs": "^6.11.2",
     "ws": "^8.14.2",
     "yt-search": "^2.12.1"
-  },
-  "engines": {
-    "node": ">=18.0.0"
   }
 }

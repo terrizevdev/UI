@@ -5,7 +5,7 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 app.enable("trust proxy");
 app.set("json spaces", 2);
@@ -15,20 +15,20 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 // Load settings
-const settingsPath = path.join(__dirname, 'settings.json');
+const settingsPath = path.join(__dirname, './src/settings.json');
 const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
 
-// Maintenance Middleware
+// Maintenance Middleware - Letakkan SEBELUM static files
 app.use((req, res, next) => {
     if (settings.maintenance && settings.maintenance.enabled) {
         console.log(chalk.bgRed.white(' MAINTENANCE MODE ACTIVE '));
-        return res.status(503).sendFile(path.join(__dirname, 'maintenance.html'));
+        return res.status(503).sendFile(path.join(__dirname, 'api-page', 'maintenance.html'));
     }
     next();
 });
 
 // Static files
-app.use('/', express.static(path.join(__dirname)));
+app.use('/', express.static(path.join(__dirname, 'api-page')));
 app.use('/src', express.static(path.join(__dirname, 'src')));
 
 // Response formatter
@@ -48,12 +48,16 @@ app.use((req, res, next) => {
     next();
 });
 
-// API Key Validation Middleware
+// API Key Validation Middleware - Hanya untuk route API
 app.use((req, res, next) => {
-  // Skip API key validation for static files and status endpoint
+  // Skip API key validation untuk:
+  // - File static dan halaman utama
+  // - Settings.json
+  // - Route status
   if (req.path === '/' || 
       req.path.startsWith('/src/') || 
-      req.path === '/settings.json' ||
+      req.path.startsWith('/api-page/') ||
+      req.path === '/src/settings.json' ||
       req.path === '/api/status' ||
       !req.path.startsWith('/api/') && !req.path.startsWith('/ai/') && !req.path.startsWith('/islami/') && !req.path.startsWith('/islamic/') && !req.path.startsWith('/tools/') && !req.path.startsWith('/random/') && !req.path.startsWith('/search/') && !req.path.startsWith('/douyin/') && !req.path.startsWith('/dl/') && !req.path.startsWith('/downloader/') && !req.path.startsWith('/stalk/')) {
     return next();
@@ -83,37 +87,28 @@ app.use((req, res, next) => {
   next();
 });
 
-// API Routes
+// Api Route
 let totalRoutes = 0;
-const apiFolder = path.join(__dirname, 'api');
-if (fs.existsSync(apiFolder)) {
-    fs.readdirSync(apiFolder).forEach((subfolder) => {
-        const subfolderPath = path.join(apiFolder, subfolder);
-        if (fs.statSync(subfolderPath).isDirectory()) {
-            fs.readdirSync(subfolderPath).forEach((file) => {
-                const filePath = path.join(subfolderPath, file);
-                if (path.extname(file) === '.js') {
-                    try {
-                        require(filePath)(app);
-                        totalRoutes++;
-                        console.log(chalk.bgHex('#FFFF99').hex('#333').bold(` Loaded Route: ${path.basename(file)} `));
-                    } catch (error) {
-                        console.error(chalk.red(`Error loading route ${file}:`), error);
-                    }
-                }
-            });
-        }
-    });
-} else {
-    console.log(chalk.yellow('API folder not found, skipping route loading'));
-}
-
+const apiFolder = path.join(__dirname, './src/api');
+fs.readdirSync(apiFolder).forEach((subfolder) => {
+    const subfolderPath = path.join(apiFolder, subfolder);
+    if (fs.statSync(subfolderPath).isDirectory()) {
+        fs.readdirSync(subfolderPath).forEach((file) => {
+            const filePath = path.join(subfolderPath, file);
+            if (path.extname(file) === '.js') {
+                require(filePath)(app);
+                totalRoutes++;
+                console.log(chalk.bgHex('#FFFF99').hex('#333').bold(` Loaded Route: ${path.basename(file)} `));
+            }
+        });
+    }
+});
 console.log(chalk.bgHex('#90EE90').hex('#333').bold(' Load Complete! ✓ '));
 console.log(chalk.bgHex('#90EE90').hex('#333').bold(` Total Routes Loaded: ${totalRoutes} `));
 
 // Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'api-page', 'index.html'));
 });
 
 // API Status endpoint (public, no API key required)
@@ -124,29 +119,27 @@ app.get('/api/status', (req, res) => {
         maintenance: settings.maintenance?.enabled || false,
         total_routes: totalRoutes,
         server_time: new Date().toISOString(),
-        creator: settings.apiSettings.creator,
-        environment: process.env.NODE_ENV || 'development'
+        creator: settings.apiSettings.creator
     });
 });
 
 // Settings endpoint (public, no API key required)
-app.get('/settings.json', (req, res) => {
+app.get('/src/settings.json', (req, res) => {
     res.json(settings);
 });
 
 // Error handlers
 app.use((req, res, next) => {
-    res.status(404).sendFile(path.join(__dirname, '404.html'));
+    res.status(404).sendFile(path.join(__dirname, 'api-page', '404.html'));
 });
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).sendFile(path.join(__dirname, '500.html'));
+    res.status(500).sendFile(path.join(__dirname, 'api-page', '500.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
     console.log(chalk.bgHex('#90EE90').hex('#333').bold(` Server is running on port ${PORT} `));
-    console.log(chalk.bgHex('#90EE90').hex('#333').bold(` Environment: ${process.env.NODE_ENV || 'development'} `));
     
     // Log API key info
     const validApiKeys = settings.apiSettings.apikey || [];
@@ -155,10 +148,7 @@ app.listen(PORT, '0.0.0.0', () => {
     // Log maintenance status on startup
     if (settings.maintenance && settings.maintenance.enabled) {
         console.log(chalk.bgRed.white(' MAINTENANCE MODE ENABLED '));
-    }
-});
-
-module.exports = app;        console.log(chalk.yellow(` Maintenance GIF: ${settings.maintenance.gifUrl} `));
+        console.log(chalk.yellow(` Maintenance GIF: ${settings.maintenance.gifUrl} `));
     }
 });
 
