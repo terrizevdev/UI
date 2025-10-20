@@ -201,19 +201,19 @@
         {
           "name": "Ytmp3",
           "desc": "Download youtube format mp3",
-          "path": "/api/ytmp3?url=&apikey=",
+          "path": "/downloader/youtube/ytmp3?url=&apikey=",
           "active": true
         },
         {
           "name": "Ytdl mp3/mp4",
           "desc": "Download youtube format mp3/320p,720p,1080p",
-          "path": "/api/ytdl?url=&format=&apikey=",
+          "path": "/downloader/ytdl?url=&format=&apikey=",
           "active": true
         },
         {
           "name": "Ytmp4",
           "desc": "Download youtube format mp4",
-          "path": "/api/ytmp4?url=&apikey=",
+          "path": "/downloader/youtube/ytmp4?url=&apikey=",
           "active": true
         },
         {
@@ -226,12 +226,6 @@
           "name": "TikTok Downloader",
           "desc": "Download TikTok videos without watermark",
           "path": "/downloader/tiktok?url=&apikey=",
-          "active": true
-        },
-        {
-          "name": "A2Z Downloader",
-          "desc": "Download from various platforms using A2Z converter",
-          "path": "/downloader/a2z?url=&apikey=",
           "active": true
         },
         {
