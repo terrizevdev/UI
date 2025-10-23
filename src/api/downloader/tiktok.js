@@ -1,4 +1,5 @@
-const axios = require('axios');
+
+const fg = require('api-dylux');
 
 async function ttdl(url) {
     try {
@@ -6,31 +7,14 @@ async function ttdl(url) {
             throw new Error('Invalid TikTok URL');
         }
         
-        const { data } = await axios.get('https://tiktok-scraper7.p.rapidapi.com/', {
-            headers: {
-                'Accept-Encoding': 'gzip',
-                'Connection': 'Keep-Alive',
-                'Host': 'tiktok-scraper7.p.rapidapi.com',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
-                'X-RapidAPI-Host': 'tiktok-scraper7.p.rapidapi.com',
-                'X-RapidAPI-Key': 'ca5c6d6fa3mshfcd2b0a0feac6b7p140e57jsn72684628152a'
-            },
-            params: {
-                url: url,
-                hd: '1'
-            },
-            timeout: 30000
-        });
+        const data = await fg.tiktok(url);
         
-        if (!data || !data.data) {
+        if (!data || !data.result) {
             throw new Error('No data received from TikTok API');
         }
         
-        return data.data;
+        return data.result;
     } catch (error) {
-        if (error.response) {
-            throw new Error(`TikTok API error: ${error.response.status} - ${error.response.data?.message || 'Unknown error'}`);
-        }
         throw new Error(`TikTok download failed: ${error.message}`);
     }
 }
@@ -59,10 +43,29 @@ module.exports = function(app) {
 
             const result = await ttdl(url);
             
+            // Format the response to match your existing structure
+            const formattedResult = {
+                id: result.id,
+                author: {
+                    nickname: result.author?.nickname || 'Unknown'
+                },
+                title: result.title || '',
+                digg_count: result.digg_count || 0,
+                comment_count: result.comment_count || 0,
+                share_count: result.share_count || 0,
+                play_count: result.play_count || 0,
+                create_time: result.create_time || '',
+                size: result.size || '',
+                duration: result.duration || 0,
+                play: result.play || '',
+                music: result.music || '',
+                images: result.images || null
+            };
+            
             res.json({
                 status: 200,
                 creator: "@Terri",
-                data: result
+                data: formattedResult
             });
             
         } catch (error) {
