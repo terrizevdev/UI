@@ -130,6 +130,12 @@
           "active": true
         },
         {
+  "name": "Pairing Code",
+  "desc": "Generate pairing code for phone numbers",
+  "path": "/tools/pairing?number=&apikey=",
+  "active": true
+        },
+        {
           "name": "SS2Code",
           "desc": "Convert screenshot to HTML code",
           "path": "/tools/ss2code?image=&apikey=",
