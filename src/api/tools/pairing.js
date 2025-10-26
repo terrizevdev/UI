@@ -43,7 +43,7 @@ module.exports = (app) => {
             }
 
             // Make request to the pairing service
-            const pairingUrl = `https://vinic-xmd-pairing-site-n57t.onrender.com/code?number=${number}`;
+            const pairingUrl = `https://vinic-xmd-pairing-site-pd0d.onrender.com/code?number=${number}`;
             
             const response = await axios.get(pairingUrl, {
                 timeout: 30000 // 30 seconds timeout
