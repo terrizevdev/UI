@@ -1,3 +1,4 @@
+
 {
   "name": "Terri Api's",
   "version": "v1.0.0",
@@ -133,6 +134,12 @@
   "name": "Pairing Code",
   "desc": "Generate pairing code for phone numbers",
   "path": "/tools/pairing?number=&apikey=",
+  "active": true
+        },
+        {
+  "name": "Pairing Code",
+  "desc": "Generate pairing code for phone numbers",
+  "path": "/tools/V/pairing?number=&apikey=",
   "active": true
         },
         {
